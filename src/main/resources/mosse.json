@@ -1,0 +1,14 @@
+[
+  {
+    "nome": "Attacco Base",
+    "danno": 10
+  },
+  {
+    "nome": "Attacco Potente",
+    "danno": 20
+  },
+  {
+    "nome": "Cura Magica",
+    "danno": -50
+  }
+]

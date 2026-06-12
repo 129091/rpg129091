@@ -1,0 +1,148 @@
+[
+  {
+    "classe": "Mostro",
+    "nome": "Goblin",
+    "puntiVita": 30,
+    "mosse": [
+      {
+        "nome": "Pugno",
+        "danno": 5
+      }
+    ]
+  },
+  {
+    "classe": "Guerriero",
+    "nome": "Soldato di Shinra",
+    "puntiVita": 45,
+    "mosse": [
+      {
+        "nome": "Attacco con Fucile",
+        "danno": 12
+      },
+      {
+        "nome": "Granata",
+        "danno": 20
+      }
+    ]
+  },
+  {
+    "classe": "Mostro",
+    "nome": "Cactuar",
+    "puntiVita": 35,
+    "mosse": [
+      {
+        "nome": "1000 Aghi",
+        "danno": 25
+      },
+      {
+        "nome": "Calcio Sfuggente",
+        "danno": 10
+      }
+    ]
+  },
+  {
+    "classe": "Mago",
+    "nome": "Piros",
+    "puntiVita": 40,
+    "mosse": [
+      {
+        "nome": "Fira",
+        "danno": 15
+      },
+      {
+        "nome": "Esplosione",
+        "danno": 30
+      }
+    ]
+  },
+  {
+    "classe": "Mostro",
+    "nome": "Tonberry",
+    "puntiVita": 80,
+    "mosse": [
+      {
+        "nome": "Coltello del Rancore",
+        "danno": 30
+      },
+      {
+        "nome": "Lentissima Avanzata",
+        "danno": 0
+      }
+    ]
+  },
+  {
+    "classe": "Guerriero",
+    "nome": "Cavaliere di Ferro",
+    "puntiVita": 90,
+    "mosse": [
+      {
+        "nome": "Spadone Pesante",
+        "danno": 20
+      },
+      {
+        "nome": "Affondo Perforante",
+        "danno": 25
+      }
+    ]
+  },
+  {
+    "classe": "Mago",
+    "nome": "Mind Flayer",
+    "puntiVita": 70,
+    "mosse": [
+      {
+        "nome": "Assalto Mentale",
+        "danno": 22
+      },
+      {
+        "nome": "Thundara",
+        "danno": 18
+      }
+    ]
+  },
+  {
+    "classe": "Mostro",
+    "nome": "Molboro",
+    "puntiVita": 120,
+    "mosse": [
+      {
+        "nome": "Alito Fetido",
+        "danno": 25
+      },
+      {
+        "nome": "Morso Velenoso",
+        "danno": 15
+      }
+    ]
+  },
+  {
+    "classe": "Guerriero",
+    "nome": "Behemoth",
+    "puntiVita": 150,
+    "mosse": [
+      {
+        "nome": "Incornata",
+        "danno": 35
+      },
+      {
+        "nome": "Meteora",
+        "danno": 40
+      }
+    ]
+  },
+  {
+    "classe": "Mago",
+    "nome": "Kefka",
+    "puntiVita": 200,
+    "mosse": [
+      {
+        "nome": "Risata Folle",
+        "danno": 45
+      },
+      {
+        "nome": "Triade Magica",
+        "danno": 30
+      }
+    ]
+  }
+]
