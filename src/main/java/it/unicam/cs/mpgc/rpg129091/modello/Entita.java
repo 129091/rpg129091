@@ -81,7 +81,7 @@ public abstract class Entita implements Combattente {
      * @param puntiVita i punti vita caricati dal database
      * @throws IllegalArgumentException se i punti superano il massimale o scendono sotto lo 0
      */
-    protected void ripristinaPuntiVita(int puntiVita) {
+    public void ripristinaPuntiVita(int puntiVita) {
         if (puntiVita < 0 || puntiVita > this.puntiVitaMassimi) {
             throw new IllegalArgumentException(
                     "I punti vita devono essere compresi tra 0 e " + this.puntiVitaMassimi);

@@ -3,14 +3,12 @@ package it.unicam.cs.mpgc.rpg129091.ui;
 import it.unicam.cs.mpgc.rpg129091.modello.Mossa;
 import it.unicam.cs.mpgc.rpg129091.motore.GestoreCombattimento;
 import it.unicam.cs.mpgc.rpg129091.motore.MotoreGioco;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 /**
  * Controller Visivo responsabile per il disegno e la reattività

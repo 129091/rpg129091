@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg129091.ui;
 
+import it.unicam.cs.mpgc.rpg129091.motore.GestoreCombattimento;
 import it.unicam.cs.mpgc.rpg129091.motore.MotoreGioco;
 import it.unicam.cs.mpgc.rpg129091.persistenza.GestoreSalvataggio;
 import it.unicam.cs.mpgc.rpg129091.utilita.CaricatoreMosse;
@@ -33,8 +34,9 @@ public class InterfacciaGrafica extends Application {
         GestoreSalvataggio servizioSalvataggio = new GestoreSalvataggio();
         CaricatoreMostri caricatoreMostri = new CaricatoreMostri();
         CaricatoreMosse caricatoreMosse = new CaricatoreMosse();
+        GestoreCombattimento gestoreCombattimento = new GestoreCombattimento();
 
-        MotoreGioco motore = new MotoreGioco(servizioSalvataggio, caricatoreMostri, caricatoreMosse);
+        MotoreGioco motore = new MotoreGioco(servizioSalvataggio, caricatoreMostri, caricatoreMosse, gestoreCombattimento);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/MenuIniziale.fxml"));
         Parent root = loader.load();

@@ -2,9 +2,6 @@ package it.unicam.cs.mpgc.rpg129091.persistenza;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.unicam.cs.mpgc.rpg129091.modello.Giocatore;
-import it.unicam.cs.mpgc.rpg129091.modello.Mossa;
-import it.unicam.cs.mpgc.rpg129091.utilita.CaricatoreMosse;
 
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -20,8 +17,13 @@ import java.util.Optional;
 /**
  * L'Implementazione concreta del servizio di salvataggio basata puramente su librerie JDBC e SQLite.
  *
- * <p>SRP applicato: nessuna traccia o conoscenza della UI o della logica del turno;
- * questa classe opera strettamente sui raw data, compattando JSON su un DBMS.</p>
+ * <p>SRP applicato: nessuna traccia o conoscenza della UI, della logica del turno,
+ * o degli oggetti di dominio (Giocatore, Mostro). Questa classe opera strettamente
+ * sui dati primitivi contenuti in {@link DatiSalvataggio}, leggendo e scrivendo
+ * su un DBMS SQLite locale.</p>
+ *
+ * <p>DIP applicato: non dipende più da {@code CaricatoreMosse} o altre classi
+ * di utilità. La ricostruzione degli oggetti di dominio è delegata al motore.</p>
  */
 public class GestoreSalvataggio implements ServizioSalvataggio {
 
@@ -64,12 +66,10 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
      * Spiana il database e deposita l'intero status su un singolo Record di tabella.
      * Utilizza parametri bind per sanificare stringhe e combattere sql-injection.
      *
-     * @param giocatore       Oggetto master hero
-     * @param hpMostroAttuale Punteggio parziale del boss
-     * @param ordineMostri    Coda randomizzata di stringhe
+     * @param dati l'oggetto {@link DatiSalvataggio} con tutti i dati da persistere
      */
     @Override
-    public void salvaPartita(Giocatore giocatore, int hpMostroAttuale, List<String> ordineMostri) {
+    public void salvaPartita(DatiSalvataggio dati) {
         String deleteSql = "DELETE FROM giocatore";
         String insertSql = "INSERT INTO giocatore(nome, hp, hpMassimi, mostriSconfitti, hpMostroAttuale, ordineMostri) VALUES(?, ?, ?, ?, ?, ?)";
 
@@ -79,13 +79,13 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
 
             stmt.execute(deleteSql);
 
-            pstmt.setString(1, giocatore.getNome());
-            pstmt.setInt(2, giocatore.getPuntiVita());
-            pstmt.setInt(3, giocatore.getPuntiVitaMassimi());
-            pstmt.setInt(4, giocatore.getMostriSconfitti());
-            pstmt.setInt(5, hpMostroAttuale);
+            pstmt.setString(1, dati.nomeGiocatore());
+            pstmt.setInt(2, dati.hpGiocatore());
+            pstmt.setInt(3, dati.hpMassimiGiocatore());
+            pstmt.setInt(4, dati.mostriSconfitti());
+            pstmt.setInt(5, dati.hpMostro());
 
-            String jsonOrdine = gson.toJson(ordineMostri);
+            String jsonOrdine = gson.toJson(dati.ordineMostri());
             pstmt.setString(6, jsonOrdine);
 
             pstmt.executeUpdate();
@@ -95,8 +95,9 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
     }
 
     /**
-     * Cerca ed estrae prelevando la row più fresca per ricostruire le instanze.
+     * Cerca ed estrae prelevando la row più fresca per ricostruire i dati grezzi.
      * Delega a Gson l'unpack dell'array immagazzinato come Testo lungo.
+     * Non ricostruisce oggetti di dominio — restituisce solo dati primitivi.
      *
      * @return Optional popolato o vuoto.
      */
@@ -110,24 +111,17 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             if (rs.next()) {
-                List<Mossa> mosseGiocatore = new CaricatoreMosse().caricaMosse();
-                mosseGiocatore = new ArrayList<>(mosseGiocatore);
-                mosseGiocatore.add(new Mossa("Difesa", 0));
-
-                Giocatore giocatore = new Giocatore(
-                        rs.getString("nome"),
-                        rs.getInt("hpMassimi"),
-                        mosseGiocatore
-                    );
-                giocatore.ripristinaPuntiVitaGiocatore(rs.getInt("hp"));
-                giocatore.setMostriSconfitti(rs.getInt("mostriSconfitti"));
-
                 String jsonOrdine = rs.getString("ordineMostri");
                 Type listType = new TypeToken<ArrayList<String>>() {}.getType();
                 List<String> ordineMostri = gson.fromJson(jsonOrdine, listType);
 
                 return Optional.of(new DatiSalvataggio(
-                        giocatore, rs.getInt("hpMostroAttuale"), ordineMostri));
+                        rs.getString("nome"),
+                        rs.getInt("hp"),
+                        rs.getInt("hpMassimi"),
+                        rs.getInt("mostriSconfitti"),
+                        rs.getInt("hpMostroAttuale"),
+                        ordineMostri));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante il caricamento della partita.", e);

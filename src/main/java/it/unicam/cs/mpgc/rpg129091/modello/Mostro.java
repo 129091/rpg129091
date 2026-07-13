@@ -80,14 +80,4 @@ public class Mostro extends Entita implements Avversario {
     public Mossa scegliMossa() {
         return mosse.get(RANDOM.nextInt(mosse.size()));
     }
-
-    /**
-     * Facciata ad hoc per l'operazione di restore. Utilizzata dal Motore per 
-     * far tornare l'avversario frontale alla stessa salute precedente al save.
-     *
-     * @param puntiVita la cifra recuperata da decodifica del salvataggio DB.
-     */
-    public void ripristinaPuntiVitaMostro(int puntiVita) {
-        ripristinaPuntiVita(puntiVita);
-    }
 }

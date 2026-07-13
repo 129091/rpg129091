@@ -25,6 +25,17 @@ public record Mossa(String nome, int danno) {
     }
 
     /**
+     * Verifica se questa mossa rappresenta un'azione difensiva.
+     * Una mossa di difesa non infligge danno e non cura (danno == 0)
+     * e il suo nome è convenzionalmente "Difesa".
+     *
+     * @return true se la mossa è un'azione difensiva
+     */
+    public boolean isDifesa() {
+        return danno == 0 && "Difesa".equals(nome);
+    }
+
+    /**
      * Calcola e restituisce il valore assoluto della cura da applicare.
      * <p>Da invocare preferibilmente dopo un controllo positivo di {@link #isCura()}.</p>
      *

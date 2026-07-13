@@ -1,8 +1,9 @@
 package it.unicam.cs.mpgc.rpg129091.motore;
 
+import it.unicam.cs.mpgc.rpg129091.modello.Avversario;
+import it.unicam.cs.mpgc.rpg129091.modello.Combattente;
 import it.unicam.cs.mpgc.rpg129091.modello.Giocatore;
 import it.unicam.cs.mpgc.rpg129091.modello.Mossa;
-import it.unicam.cs.mpgc.rpg129091.modello.Mostro;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,10 @@ import java.util.List;
  * il calcolo dei danni e l'applicazione di cure e passive sgravando totalmente 
  * l'interfaccia utente (UI) o il coordinatore macroscopico (MotoreGioco)
  * dai fardelli logici della battaglia a turni.</p>
+ *
+ * <p>Rispetta il Dependency Inversion Principle (DIP): dipende dalle
+ * interfacce {@link Combattente} e {@link Avversario} anziché dalle classi concrete,
+ * ad eccezione di {@link Giocatore} che espone meccaniche di difesa specifiche.</p>
  */
 public class GestoreCombattimento {
 
@@ -39,38 +44,42 @@ public class GestoreCombattimento {
      * delle interazioni di un turno. Il turno è suddiviso in "Azione Eroe" seguita 
      * subito dalla risposta (counter-attack) "Azione Nemico".
      *
+     * <p>Dipende dall'interfaccia {@link Avversario} (che estende {@link Combattente})
+     * per il nemico, garantendo che qualsiasi implementazione dell'avversario possa
+     * essere utilizzata senza modificare questa classe.</p>
+     *
      * @param giocatore  l'entità del paladino umano in partita
-     * @param mostro     la creatura gestita dal sistema (AI)
+     * @param avversario la creatura gestita dal sistema (AI), referenziata tramite interfaccia
      * @param mossaScelta il record mossa invocato tramite l'azione sul bottone UI
      * @return un'istanza del record RisultatoTurno pronta per essere parsata in vista
      */
-    public RisultatoTurno eseguiTurno(Giocatore giocatore, Mostro mostro, Mossa mossaScelta) {
+    public RisultatoTurno eseguiTurno(Giocatore giocatore, Avversario avversario, Mossa mossaScelta) {
         List<String> log = new ArrayList<>();
 
         giocatore.decrementaDifesa();
 
-        if (mossaScelta.nome().equals("Difesa")) {
+        if (mossaScelta.isDifesa()) {
             giocatore.attivaDifesa();
             log.add("Ti sei messo in posizione difensiva! Danni dimezzati per i prossimi 2 turni nemici.");
         } else if (mossaScelta.isCura()) {
             giocatore.cura(mossaScelta.getValoreCura());
             log.add("Usi " + mossaScelta.nome() + " e recuperi " + mossaScelta.getValoreCura() + " HP.");
         } else {
-            int dannoInflitto = mostro.subisciDanno(mossaScelta.danno());
-            log.add("Hai usato " + mossaScelta.nome() + " e inflitto " + dannoInflitto + " danni a " + mostro.getNome() + ".");
+            int dannoInflitto = avversario.subisciDanno(mossaScelta.danno());
+            log.add("Hai usato " + mossaScelta.nome() + " e inflitto " + dannoInflitto + " danni a " + avversario.getNome() + ".");
         }
 
-        if (mostro.isMorto()) {
-            log.add(mostro.getNome() + " è stato sconfitto!");
+        if (avversario.isMorto()) {
+            log.add(avversario.getNome() + " è stato sconfitto!");
             giocatore.setMostriSconfitti(giocatore.getMostriSconfitti() + 1);
             return new RisultatoTurno(log, false, true);
         }
 
-        Mossa mossaMostro = mostro.scegliMossa();
+        Mossa mossaMostro = avversario.scegliMossa();
         int dannoSubito = giocatore.subisciDanno(mossaMostro.danno());
-        log.add(mostro.getNome() + " contrattacca con " + mossaMostro.nome() + " e infligge " + dannoSubito + " danni.");
+        log.add(avversario.getNome() + " contrattacca con " + mossaMostro.nome() + " e infligge " + dannoSubito + " danni.");
 
-        String logPassiva = mostro.applicaPassiva(giocatore);
+        String logPassiva = avversario.applicaPassiva(giocatore);
         if (logPassiva != null && !logPassiva.isBlank()) {
             log.add(logPassiva);
         }

@@ -1,7 +1,5 @@
 package it.unicam.cs.mpgc.rpg129091.persistenza;
 
-import it.unicam.cs.mpgc.rpg129091.modello.Giocatore;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -12,22 +10,24 @@ import java.util.Optional;
  * dipende strettamente da questa astrazione, e si disinteressa delle query o del file-system.
  * Applicato anche l'Open/Closed Principle (OCP): nuove implementazioni (file locali CSV,
  * API REST in cloud, ecc.) possono essere create a piacere senza toccare il motore.</p>
+ *
+ * <p>Rispetta il Single Responsibility Principle (SRP): l'interfaccia opera
+ * su dati primitivi e DTO ({@link DatiSalvataggio}), senza dipendere da classi
+ * di dominio come Giocatore, mantenendo la persistenza disaccoppiata dal modello.</p>
  */
 public interface ServizioSalvataggio {
 
     /**
      * Salva uno snapshot dello stato attuale della partita sul supporto permanente.
      *
-     * @param giocatore       l'oggetto rappresentante l'Eroe
-     * @param hpMostroAttuale i punti vita residui del nemico frontale, critico per un load affidabile
-     * @param ordineMostri    l'elenco stringa decodificabile dei mostri non ancora o già sconfitti
+     * @param dati l'oggetto {@link DatiSalvataggio} contenente tutti i dati da persistere
      */
-    void salvaPartita(Giocatore giocatore, int hpMostroAttuale, List<String> ordineMostri);
+    void salvaPartita(DatiSalvataggio dati);
 
     /**
      * Ricerca e tenta di estrarre e parsare l'ultimo salvataggio disponibile.
      *
-     * @return un {@link Optional} contenente il Data Transfer Object di salvataggio. Restituisce Option.empty() se nulla vien trovato.
+     * @return un {@link Optional} contenente il Data Transfer Object di salvataggio. Restituisce Optional.empty() se nulla vien trovato.
      */
     Optional<DatiSalvataggio> caricaPartita();
 }

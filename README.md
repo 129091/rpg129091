@@ -67,7 +67,7 @@ it.unicam.cs.mpgc.rpg129091
 | Tecnologia | Utilizzo |
 |---|---|
 | **Java 25** | Linguaggio di programmazione |
-| **JavaFX 17** | Interfaccia grafica (FXML) |
+| **JavaFX 25** | Interfaccia grafica (FXML) |
 | **Gson 2.10.1** | Parsing dei file JSON (mostri e mosse) |
 | **SQLite (JDBC 3.43)** | Persistenza dei salvataggi |
 | **Gradle 9.3** | Build system e gestione delle dipendenze |
@@ -81,7 +81,7 @@ Il progetto è stato progettato e refactorizzato per rispettare i **principi SOL
 - **O** - *Open/Closed*: il sistema è aperto all'estensione (nuovi mostri, nuovi salvataggi) senza modificare il codice esistente
 - **L** - *Liskov Substitution*: `Guerriero` e `Mago` possono sostituire `Mostro` in qualsiasi contesto
 - **I** - *Interface Segregation*: interfacce focalizzate (`Combattente`, `Avversario`, `ServizioSalvataggio`, `CaricatoreDati<T>`)
-- **D** - *Dependency Inversion*: le dipendenze vengono iniettate tramite costruttore, non create internamente
+- **D** - *Dependency Inversion*: servizi di salvataggio, caricatori e gestore del combattimento vengono iniettati tramite costruttore
 
 ## 📖 Documentazione
 

@@ -1,7 +1,5 @@
 package it.unicam.cs.mpgc.rpg129091.persistenza;
 
-import it.unicam.cs.mpgc.rpg129091.modello.Giocatore;
-import it.unicam.cs.mpgc.rpg129091.modello.Mossa;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,26 +32,22 @@ class GestoreSalvataggioTest {
     @Test
     void testSalvaECaricaPartita() {
         // Arrange
-        List<Mossa> mosseDummy = List.of(new Mossa("Attacco Dummy", 10));
-        Giocatore giocatore = new Giocatore("Tester", 150, mosseDummy);
-        giocatore.subisciDanno(20); // HP diventa 130
-        giocatore.setMostriSconfitti(3);
-
-        int hpMostroAttuale = 45;
         List<String> ordineMostri = List.of("Orco", "Goblin", "Lich");
+        DatiSalvataggio datiDaSalvare = new DatiSalvataggio(
+                "Tester", 130, 150, 3, 45, ordineMostri);
 
         // Act
-        gestoreSalvataggio.salvaPartita(giocatore, hpMostroAttuale, ordineMostri);
+        gestoreSalvataggio.salvaPartita(datiDaSalvare);
         Optional<DatiSalvataggio> datiCaricati = gestoreSalvataggio.caricaPartita();
 
         // Assert
         assertTrue(datiCaricati.isPresent(), "I dati di salvataggio dovrebbero essere presenti dopo il salvataggio");
         
         DatiSalvataggio dati = datiCaricati.get();
-        assertEquals("Tester", dati.giocatore().getNome());
-        assertEquals(130, dati.giocatore().getPuntiVita());
-        assertEquals(150, dati.giocatore().getPuntiVitaMassimi());
-        assertEquals(3, dati.giocatore().getMostriSconfitti());
+        assertEquals("Tester", dati.nomeGiocatore());
+        assertEquals(130, dati.hpGiocatore());
+        assertEquals(150, dati.hpMassimiGiocatore());
+        assertEquals(3, dati.mostriSconfitti());
         
         assertEquals(45, dati.hpMostro());
         assertEquals(3, dati.ordineMostri().size());

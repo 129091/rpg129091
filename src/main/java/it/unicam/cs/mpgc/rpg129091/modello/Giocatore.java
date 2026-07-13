@@ -117,14 +117,4 @@ public class Giocatore extends Entita {
         }
         return super.subisciDanno(danno);
     }
-
-    /**
-     * Metodo ponte per ricaricare la situazione di salute da vecchi snapshot
-     * mantenendo coperto il metodo protected `ripristinaPuntiVita`.
-     *
-     * @param puntiVita la cifra esatta di HP decodificata dai dati persistenti.
-     */
-    public void ripristinaPuntiVitaGiocatore(int puntiVita) {
-        ripristinaPuntiVita(puntiVita);
-    }
 }

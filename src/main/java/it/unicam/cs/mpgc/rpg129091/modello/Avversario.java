@@ -3,11 +3,13 @@ package it.unicam.cs.mpgc.rpg129091.modello;
 /**
  * Interfaccia per i nemici del giocatore.
  * 
- * <p>Rispetta l'Interface Segregation Principle (ISP): separa i comportamenti 
- * specifici dei nemici, legati all'automazione del turno o agli eventi testuali,
- * da quelli comuni a tutti i combattenti definiti in {@link Combattente}.</p>
+ * <p>Estende {@link Combattente} per unificare le capacità di combattimento
+ * con i comportamenti specifici dei nemici (passiva, grido di battaglia, scelta mossa).
+ * Rispetta l'Interface Segregation Principle (ISP): aggiunge solo le operazioni
+ * proprie degli avversari controllati dall'IA, mantenendo la gerarchia coesa
+ * e permettendo al codice client di riferirsi a un'unica interfaccia.</p>
  */
-public interface Avversario {
+public interface Avversario extends Combattente {
 
     /**
      * Genera e restituisce la frase o il grido di battaglia
