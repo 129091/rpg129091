@@ -6,7 +6,8 @@
     "mosse": [
       {
         "nome": "Pugno",
-        "danno": 5
+        "danno": 5,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -17,11 +18,13 @@
     "mosse": [
       {
         "nome": "Attacco con Fucile",
-        "danno": 12
+        "danno": 12,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Granata",
-        "danno": 20
+        "danno": 20,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -32,11 +35,13 @@
     "mosse": [
       {
         "nome": "1000 Aghi",
-        "danno": 25
+        "danno": 25,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Calcio Sfuggente",
-        "danno": 10
+        "danno": 10,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -47,11 +52,13 @@
     "mosse": [
       {
         "nome": "Fira",
-        "danno": 15
+        "danno": 15,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Esplosione",
-        "danno": 30
+        "danno": 30,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -62,11 +69,13 @@
     "mosse": [
       {
         "nome": "Coltello del Rancore",
-        "danno": 30
+        "danno": 30,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Lentissima Avanzata",
-        "danno": 0
+        "danno": 0,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -77,11 +86,13 @@
     "mosse": [
       {
         "nome": "Spadone Pesante",
-        "danno": 20
+        "danno": 20,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Affondo Perforante",
-        "danno": 25
+        "danno": 25,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -92,11 +103,13 @@
     "mosse": [
       {
         "nome": "Assalto Mentale",
-        "danno": 22
+        "danno": 22,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Thundara",
-        "danno": 18
+        "danno": 18,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -107,11 +120,13 @@
     "mosse": [
       {
         "nome": "Alito Fetido",
-        "danno": 25
+        "danno": 25,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Morso Velenoso",
-        "danno": 15
+        "danno": 15,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -122,11 +137,13 @@
     "mosse": [
       {
         "nome": "Incornata",
-        "danno": 35
+        "danno": 35,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Meteora",
-        "danno": 40
+        "danno": 40,
+        "tipo": "ATTACCO"
       }
     ]
   },
@@ -137,11 +154,13 @@
     "mosse": [
       {
         "nome": "Risata Folle",
-        "danno": 45
+        "danno": 45,
+        "tipo": "ATTACCO"
       },
       {
         "nome": "Triade Magica",
-        "danno": 30
+        "danno": 30,
+        "tipo": "ATTACCO"
       }
     ]
   }

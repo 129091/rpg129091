@@ -10,35 +10,25 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Caricatore specializzato nel recupero di mosse da file statico JSON.
+ * Caricatore specializzato per le mosse del giocatore da file JSON.
  *
- * <p>SRP: questa classe non si preoccupa di Mostri, Giocatori o quant'altro.
- * Il suo unico scopo architettonico è estrarre un testuale `mosse.json` e 
- * istanziarlo come oggetti di dominio {@link Mossa} mediante Gson.</p>
+ * <p>Rispetta il Single Responsibility Principle (SRP): la sua unica
+ * responsabilità è estrarre le mosse da {@code mosse.json}.</p>
  */
 public class CaricatoreMosse implements CaricatoreDati<Mossa> {
 
-    /**
-     * Path statico hardcodato alla risorsa (interna al Classpath).
-     */
     private static final String PERCORSO_RISORSA = "mosse.json";
 
-    /**
-     * Facciata adempiente al contratto dell'interfaccia.
-     *
-     * @return la lista delle Mosse recuperate
-     */
     @Override
     public List<Mossa> caricaDati() {
         return caricaMosse();
     }
 
     /**
-     * Legge fisicamente il JSON utilizzando l'InputStream legato alle resources
-     * compilate e avvia la libreria deserializzatrice.
+     * Legge e deserializza le mosse dal file JSON nelle risorse.
      *
-     * @return una List di mosse lette correttamente
-     * @throws RuntimeException se il path è incorretto, manca il file, o il JSON non matcha i record
+     * @return la lista delle mosse caricate
+     * @throws RuntimeException se il file non è trovato o il JSON non è valido
      */
     public List<Mossa> caricaMosse() {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(PERCORSO_RISORSA)) {

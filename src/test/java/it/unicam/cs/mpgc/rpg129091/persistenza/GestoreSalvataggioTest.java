@@ -13,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class GestoreSalvataggioTest {
 
     private GestoreSalvataggio gestoreSalvataggio;
-    private final String DB_PATH = "salvataggio.db";
+    private static final String DB_PATH = "test_salvataggio.db";
+    private static final String DB_URL = "jdbc:sqlite:" + DB_PATH;
 
     @BeforeEach
     void setUp() {
-        gestoreSalvataggio = new GestoreSalvataggio();
+        gestoreSalvataggio = new GestoreSalvataggio(DB_URL);
     }
 
     @AfterEach
     void tearDown() {
-        // Pulizia file DB per evitare di sporcare il workspace con salvataggi del test
         File dbFile = new File(DB_PATH);
         if (dbFile.exists()) {
             dbFile.delete();
@@ -42,13 +42,13 @@ class GestoreSalvataggioTest {
 
         // Assert
         assertTrue(datiCaricati.isPresent(), "I dati di salvataggio dovrebbero essere presenti dopo il salvataggio");
-        
+
         DatiSalvataggio dati = datiCaricati.get();
         assertEquals("Tester", dati.nomeGiocatore());
         assertEquals(130, dati.hpGiocatore());
         assertEquals(150, dati.hpMassimiGiocatore());
         assertEquals(3, dati.mostriSconfitti());
-        
+
         assertEquals(45, dati.hpMostro());
         assertEquals(3, dati.ordineMostri().size());
         assertEquals("Orco", dati.ordineMostri().get(0));

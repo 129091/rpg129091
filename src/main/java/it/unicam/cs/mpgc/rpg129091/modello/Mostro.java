@@ -1,16 +1,18 @@
 package it.unicam.cs.mpgc.rpg129091.modello;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 /**
- * Rappresenta un mostro generico che funge da avversario base all'interno dell'arena.
- * 
- * <p>La classe è progettata non-final rispettando l'Open/Closed Principle (OCP): 
- * altre classi (come {@link Guerriero} e {@link Mago}) possono estenderla
- * per alterare agilmente il grido di battaglia e l'abilità passiva,
- * mantenendo inalterata l'infrastruttura di gestione del mostro (mosse, pool di vite).</p>
+ * Rappresenta un mostro generico che funge da avversario base.
+ *
+ * <p>Rispetta l'Open/Closed Principle (OCP): la classe è non-final,
+ * permettendo a sottoclassi come {@link Guerriero} e {@link Mago}
+ * di sovrascrivere grido di battaglia e passiva senza modificare
+ * questa classe.</p>
+ *
+ * <p>Rispetta il Liskov Substitution Principle (LSP): qualsiasi sottoclasse
+ * può essere usata ovunque sia atteso un {@link Avversario}.</p>
  */
 public class Mostro extends Entita implements Avversario {
 
@@ -18,14 +20,12 @@ public class Mostro extends Entita implements Avversario {
     private static final Random RANDOM = new Random();
 
     /**
-     * Costruisce un nuovo avversario. La lista delle mosse viene copiata in modo 
-     * difensivo (immutable copy) per prevenire inquinamenti o corruzioni accidentali
-     * dello stato di un mostro condiviso fra turni.
+     * Costruisce un nuovo avversario con copia difensiva delle mosse.
      *
-     * @param nome             il nome identificativo della creatura (es. Goblin)
-     * @param puntiVitaMassimi gli HP massimi al momento dello schieramento
-     * @param mosse            una lista di record {@link Mossa} posseduti dall'entità
-     * @throws IllegalArgumentException qualora non venisse fornito alcun moveset
+     * @param nome             il nome della creatura
+     * @param puntiVitaMassimi gli HP massimi
+     * @param mosse            le mosse possedute
+     * @throws IllegalArgumentException se non vengono fornite mosse
      */
     public Mostro(String nome, int puntiVitaMassimi, List<Mossa> mosse) {
         super(nome, puntiVitaMassimi);
@@ -35,34 +35,22 @@ public class Mostro extends Entita implements Avversario {
         this.mosse = List.copyOf(mosse);
     }
 
-    /**
-     * Recupera il moveset assegnato a questo mostro.
-     *
-     * @return la lista immodificabile delle mosse.
-     */
     @Override
     public List<Mossa> getMosse() {
         return mosse;
     }
 
-    /**
-     * Formula l'urlo iconico che introduce l'avversario sul campo di battaglia.
-     * È concepito per essere sovrascritto da classi derivate.
-     *
-     * @return String con il saluto del mostro.
-     */
     @Override
     public String ottieniGridoDiBattaglia() {
         return "Un " + getNome() + " selvaggio appare!";
     }
 
     /**
-     * Applica l'abilità speciale che scatta ad ogni risoluzione del turno mostro.
-     * Come default "vanilla", il Mostro infligge banali 5 danni extra inevitabili.
-     * Questo comportamento andrà tipicamente overridato per sottoclassi specializzate.
+     * Passiva del mostro base: infligge 5 danni extra inevitabili.
+     * Sottoclassi sovrascrivono per effetti specializzati.
      *
-     * @param bersaglio l'eroe protagonista contro cui si sta combattendo.
-     * @return Una stringa descrittiva di log pronta ad andare sull'interfaccia utente.
+     * @param bersaglio il combattente bersaglio
+     * @return descrizione dell'effetto
      */
     @Override
     public String applicaPassiva(Combattente bersaglio) {
@@ -70,12 +58,6 @@ public class Mostro extends Entita implements Avversario {
         return getNome() + " infligge " + dannoEffettivo + " danni extra (Passiva Mostro).";
     }
 
-    /**
-     * Implementa un algoritmo basilare di Artificial Intelligence Randomizzata
-     * per permettere alla creatura di decidere in solitaria la sua prossima azione.
-     *
-     * @return l'azione pescata a random dal pool delle mosse caricate da JSON
-     */
     @Override
     public Mossa scegliMossa() {
         return mosse.get(RANDOM.nextInt(mosse.size()));

@@ -15,33 +15,34 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * L'Implementazione concreta del servizio di salvataggio basata puramente su librerie JDBC e SQLite.
+ * Implementazione concreta del servizio di salvataggio basata su SQLite.
  *
- * <p>SRP applicato: nessuna traccia o conoscenza della UI, della logica del turno,
- * o degli oggetti di dominio (Giocatore, Mostro). Questa classe opera strettamente
- * sui dati primitivi contenuti in {@link DatiSalvataggio}, leggendo e scrivendo
- * su un DBMS SQLite locale.</p>
+ * <p>Rispetta il Single Responsibility Principle (SRP): opera strettamente
+ * sui dati primitivi contenuti in {@link DatiSalvataggio}, senza conoscere
+ * classi di dominio come Giocatore o Mostro.</p>
  *
- * <p>DIP applicato: non dipende più da {@code CaricatoreMosse} o altre classi
- * di utilità. La ricostruzione degli oggetti di dominio è delegata al motore.</p>
+ * <p>Rispetta il Dependency Inversion Principle (DIP): l'URL del database
+ * viene iniettato tramite costruttore, permettendo la configurazione esterna
+ * e facilitando il testing.</p>
  */
 public class GestoreSalvataggio implements ServizioSalvataggio {
 
-    private static final String URL = "jdbc:sqlite:salvataggio.db";
+    private final String urlDatabase;
     private final Gson gson;
 
     /**
-     * Prepara il parser JSON e si assicura fisicamente 
-     * tramite metodo init privato che la tabella e lo storage esistano.
+     * Crea il gestore con l'URL del database iniettato.
+     *
+     * @param urlDatabase l'URL JDBC del database SQLite
      */
-    public GestoreSalvataggio() {
+    public GestoreSalvataggio(String urlDatabase) {
+        this.urlDatabase = urlDatabase;
         this.gson = new Gson();
         creaTabella();
     }
 
     /**
-     * Genera la schema DDL per SQLite ignorando silenziosamente se già sussiste.
-     * Propaga l'errore SQL convertendolo in standard RuntimeException.
+     * Genera lo schema DDL per SQLite se non esiste.
      */
     private void creaTabella() {
         String sql = "CREATE TABLE IF NOT EXISTS giocatore (\n"
@@ -54,7 +55,7 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
                 + " ordineMostri TEXT NOT NULL\n"
                 + ");";
 
-        try (Connection conn = DriverManager.getConnection(URL);
+        try (Connection conn = DriverManager.getConnection(urlDatabase);
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -62,18 +63,12 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
         }
     }
 
-    /**
-     * Spiana il database e deposita l'intero status su un singolo Record di tabella.
-     * Utilizza parametri bind per sanificare stringhe e combattere sql-injection.
-     *
-     * @param dati l'oggetto {@link DatiSalvataggio} con tutti i dati da persistere
-     */
     @Override
     public void salvaPartita(DatiSalvataggio dati) {
         String deleteSql = "DELETE FROM giocatore";
         String insertSql = "INSERT INTO giocatore(nome, hp, hpMassimi, mostriSconfitti, hpMostroAttuale, ordineMostri) VALUES(?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(URL);
+        try (Connection conn = DriverManager.getConnection(urlDatabase);
              Statement stmt = conn.createStatement();
              PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
 
@@ -94,19 +89,12 @@ public class GestoreSalvataggio implements ServizioSalvataggio {
         }
     }
 
-    /**
-     * Cerca ed estrae prelevando la row più fresca per ricostruire i dati grezzi.
-     * Delega a Gson l'unpack dell'array immagazzinato come Testo lungo.
-     * Non ricostruisce oggetti di dominio — restituisce solo dati primitivi.
-     *
-     * @return Optional popolato o vuoto.
-     */
     @Override
     public Optional<DatiSalvataggio> caricaPartita() {
         String sql = "SELECT nome, hp, hpMassimi, mostriSconfitti, hpMostroAttuale, ordineMostri "
                 + "FROM giocatore ORDER BY id DESC LIMIT 1";
 
-        try (Connection conn = DriverManager.getConnection(URL);
+        try (Connection conn = DriverManager.getConnection(urlDatabase);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 

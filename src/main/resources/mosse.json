@@ -1,14 +1,17 @@
 [
   {
     "nome": "Attacco Base",
-    "danno": 10
+    "danno": 10,
+    "tipo": "ATTACCO"
   },
   {
     "nome": "Attacco Potente",
-    "danno": 20
+    "danno": 20,
+    "tipo": "ATTACCO"
   },
   {
     "nome": "Cura Magica",
-    "danno": -50
+    "danno": -50,
+    "tipo": "CURA"
   }
 ]

@@ -2,42 +2,60 @@ package it.unicam.cs.mpgc.rpg129091.modello;
 
 /**
  * Rappresenta una mossa utilizzabile in combattimento.
- * 
- * <p>La classe è stata disegnata come un <b>Record immutabile</b>: 
- * una volta creata, i suoi campi non possono essere modificati. Questo garantisce 
- * thread-safety e un comportamento coerente.
- * Valori di danno positivi indicano un attacco, negativi indicano una cura.
- * Questo approccio semplifica l'estensione senza ricorrere a complesse gerarchie di mosse.</p>
  *
- * @param nome  Il nome univoco e testuale della mossa (es. "Fendente")
- * @param danno L'entità dell'azione. Positivo per colpire, negativo per le magie di cura
+ * <p>Record immutabile con tipo esplicito tramite {@link TipoMossa}.
+ * Rispetta l'Open/Closed Principle (OCP): nuovi tipi di mossa possono essere
+ * aggiunti estendendo l'enumerazione senza modificare questo record.
+ * Il tipo è determinato esplicitamente, eliminando la dipendenza da
+ * magic strings o convenzioni sui valori.</p>
+ *
+ * @param nome  il nome testuale della mossa
+ * @param danno l'entità dell'azione (positivo = danno, negativo = cura, zero = neutro)
+ * @param tipo  il tipo della mossa che ne determina il comportamento
  */
-public record Mossa(String nome, int danno) {
+public record Mossa(String nome, int danno, TipoMossa tipo) {
 
     /**
-     * Valuta se l'azione rappresentata da questa mossa si configura come una cura
-     * piuttosto che un attacco.
+     * Costruttore compatto con validazione.
+     */
+    public Mossa {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("Il nome della mossa non può essere nullo o vuoto.");
+        }
+        if (tipo == null) {
+            throw new IllegalArgumentException("Il tipo della mossa non può essere nullo.");
+        }
+    }
+
+    /**
+     * Verifica se questa mossa è un'azione curativa.
      *
-     * @return true se il danno associato è negativo, indicando che la mossa ripristina la salute
+     * @return true se il tipo è {@link TipoMossa#CURA}
      */
     public boolean isCura() {
-        return danno < 0;
+        return tipo == TipoMossa.CURA;
     }
 
     /**
-     * Verifica se questa mossa rappresenta un'azione difensiva.
-     * Una mossa di difesa non infligge danno e non cura (danno == 0)
-     * e il suo nome è convenzionalmente "Difesa".
+     * Verifica se questa mossa è un'azione difensiva.
      *
-     * @return true se la mossa è un'azione difensiva
+     * @return true se il tipo è {@link TipoMossa#DIFESA}
      */
     public boolean isDifesa() {
-        return danno == 0 && "Difesa".equals(nome);
+        return tipo == TipoMossa.DIFESA;
     }
 
     /**
-     * Calcola e restituisce il valore assoluto della cura da applicare.
-     * <p>Da invocare preferibilmente dopo un controllo positivo di {@link #isCura()}.</p>
+     * Verifica se questa mossa è un attacco.
+     *
+     * @return true se il tipo è {@link TipoMossa#ATTACCO}
+     */
+    public boolean isAttacco() {
+        return tipo == TipoMossa.ATTACCO;
+    }
+
+    /**
+     * Calcola il valore assoluto della cura da applicare.
      *
      * @return l'ammontare di punti vita da guarire
      */
@@ -46,13 +64,16 @@ public record Mossa(String nome, int danno) {
     }
 
     /**
-     * Rappresentazione in formato stringa leggibile della mossa,
-     * pronta ad essere iniettata in log di testo o interfacce grafiche.
+     * Rappresentazione leggibile della mossa, formattata in base al tipo.
      *
-     * @return una descrizione formattata come "Nome (Danno/Cura: Entità)"
+     * @return una descrizione formattata
      */
     @Override
     public String toString() {
-        return nome + " (" + (isCura() ? "Cura: " + getValoreCura() : "Danno: " + danno) + ")";
+        return switch (tipo) {
+            case CURA -> nome + " (Cura: " + getValoreCura() + ")";
+            case DIFESA -> nome + " (Difesa)";
+            case ATTACCO -> nome + " (Danno: " + danno + ")";
+        };
     }
 }

@@ -2,7 +2,7 @@ package it.unicam.cs.mpgc.rpg129091.modello;
 
 /**
  * Interfaccia per i nemici del giocatore.
- * 
+ *
  * <p>Estende {@link Combattente} per unificare le capacità di combattimento
  * con i comportamenti specifici dei nemici (passiva, grido di battaglia, scelta mossa).
  * Rispetta l'Interface Segregation Principle (ISP): aggiunge solo le operazioni
@@ -20,7 +20,7 @@ public interface Avversario extends Combattente {
     String ottieniGridoDiBattaglia();
 
     /**
-     * Applica l'effetto passivo unico dell'avversario (es. rubavita, veleno, ecc.)
+     * Applica l'effetto passivo unico dell'avversario (es. rubavita, rigenerazione)
      * sul bersaglio o su se stesso.
      * Restituisce un messaggio di log che descrive l'effetto per la UI.
      *
@@ -33,7 +33,7 @@ public interface Avversario extends Combattente {
      * L'avversario sceglie autonomamente una mossa dal proprio arsenale
      * da eseguire contro il giocatore.
      *
-     * @return l'istanza della {@link Mossa} selezionata, oppure null se sprovvisto
+     * @return l'istanza della {@link Mossa} selezionata
      */
     Mossa scegliMossa();
 }

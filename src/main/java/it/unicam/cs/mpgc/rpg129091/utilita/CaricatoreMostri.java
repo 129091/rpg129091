@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import it.unicam.cs.mpgc.rpg129091.modello.Avversario;
 import it.unicam.cs.mpgc.rpg129091.modello.Mossa;
-import it.unicam.cs.mpgc.rpg129091.modello.Mostro;
+import it.unicam.cs.mpgc.rpg129091.modello.TipoMossa;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -14,39 +15,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Caricatore avanzato di entità mostruose.
+ * Caricatore avanzato di entità avversarie da file JSON.
  *
- * <p>Come suggerito in SRP il modulo processa esclusivamente `mostri.json`.
- * Il design spicca nell'applicazione dell'OCP (Open/Closed Principle): 
- * supporta automaticamente l'istanziazione di *nuove* classi nemiche 
- * semplicemente basandosi sull'attributo "classe" letto dal Json. Tutto questo 
- * sfruttando le Reflection API e invocando i costruttori in blind-mode senza mai modificare questa classe.</p>
+ * <p>Rispetta il Single Responsibility Principle (SRP): processa esclusivamente
+ * {@code mostri.json}.</p>
+ *
+ * <p>Rispetta l'Open/Closed Principle (OCP): supporta automaticamente
+ * nuove classi nemiche tramite Reflection API, basandosi sull'attributo
+ * "classe" del JSON, senza modificare questa classe.</p>
+ *
+ * <p>Rispetta il Dependency Inversion Principle (DIP): restituisce
+ * {@link Avversario} (interfaccia) anziché la classe concreta {@code Mostro}.</p>
  */
-public class CaricatoreMostri implements CaricatoreDati<Mostro> {
+public class CaricatoreMostri implements CaricatoreDati<Avversario> {
 
-    /** Path che punta alla root delle risposte resources. */
     private static final String PERCORSO_RISORSA = "/mostri.json";
-    
-    /** Base Package ove tutte le instanze delle classi dovranno risiedere obbligatoriamente. */
     private static final String PACKAGE_MODELLO = "it.unicam.cs.mpgc.rpg129091.modello.";
 
-    /**
-     * Facciata di estrazione che compie il lavoro in appoggio a {@link #caricaMostri()}.
-     *
-     * @return Una lista completa e popolata
-     */
     @Override
-    public List<Mostro> caricaDati() {
+    public List<Avversario> caricaDati() {
         return caricaMostri();
     }
 
     /**
-     * Entra nel JSON root di array iterando su tutti gli oggetti incapsulati per estrapolarli.
+     * Carica e istanzia tutti gli avversari dal file JSON.
      *
-     * @return la collezione completa delle istanze istanziate
+     * @return la lista degli avversari caricati
      */
-    public List<Mostro> caricaMostri() {
-        List<Mostro> mostri = new ArrayList<>();
+    public List<Avversario> caricaMostri() {
+        List<Avversario> avversari = new ArrayList<>();
         Gson gson = new Gson();
 
         try (Reader reader = new InputStreamReader(
@@ -56,24 +53,24 @@ public class CaricatoreMostri implements CaricatoreDati<Mostro> {
 
             for (JsonElement element : jsonArray) {
                 JsonObject jsonObject = element.getAsJsonObject();
-                Mostro mostro = parseMostro(jsonObject);
-                mostri.add(mostro);
+                Avversario avversario = parseAvversario(jsonObject);
+                avversari.add(avversario);
             }
         } catch (Exception e) {
             throw new RuntimeException("Errore nel caricamento dei mostri.", e);
         }
-        return mostri;
+        return avversari;
     }
 
     /**
-     * Preleva i tre attributi flat standard (classe, nome, hp) e lancia l'array annidato mosse.
-     * In seguito elabora con Reflection ({@link Class#forName(String)}) il tipo esatto (es. "Guerriero").
+     * Parsa un singolo avversario dal JSON, utilizzando Reflection
+     * per istanziare la classe corretta.
      *
-     * @param jsonObject un nodo di mostro Json
-     * @return Un mostro concreto castato (potrebbe essere il mostro base o una sua estensione)
-     * @throws Exception potenziale fallimento di invocazione riflessiva o cast mancato
+     * @param jsonObject il nodo JSON dell'avversario
+     * @return l'avversario istanziato
+     * @throws Exception in caso di errore di riflessione o cast
      */
-    private Mostro parseMostro(JsonObject jsonObject) throws Exception {
+    private Avversario parseAvversario(JsonObject jsonObject) throws Exception {
         String classeNome = jsonObject.get("classe").getAsString();
         String nome = jsonObject.get("nome").getAsString();
         int puntiVita = jsonObject.get("puntiVita").getAsInt();
@@ -83,14 +80,14 @@ public class CaricatoreMostri implements CaricatoreDati<Mostro> {
         String fullClassName = PACKAGE_MODELLO + classeNome;
         Class<?> clazz = Class.forName(fullClassName);
         Constructor<?> constructor = clazz.getConstructor(String.class, int.class, List.class);
-        return (Mostro) constructor.newInstance(nome, puntiVita, mosse);
+        return (Avversario) constructor.newInstance(nome, puntiVita, mosse);
     }
 
     /**
-     * Converte un blocco JSON mosse interno al mostro in oggetti concreti.
+     * Converte l'array JSON delle mosse in oggetti {@link Mossa}.
      *
-     * @param mosseArray il json node target
-     * @return Elenco pronto di skills nemiche
+     * @param mosseArray il nodo JSON delle mosse
+     * @return la lista delle mosse parsate
      */
     private List<Mossa> parseMosse(JsonArray mosseArray) {
         List<Mossa> mosse = new ArrayList<>();
@@ -98,7 +95,8 @@ public class CaricatoreMostri implements CaricatoreDati<Mostro> {
             JsonObject mossaObject = mossaElement.getAsJsonObject();
             String mossaNome = mossaObject.get("nome").getAsString();
             int danno = mossaObject.get("danno").getAsInt();
-            mosse.add(new Mossa(mossaNome, danno));
+            TipoMossa tipo = TipoMossa.valueOf(mossaObject.get("tipo").getAsString());
+            mosse.add(new Mossa(mossaNome, danno, tipo));
         }
         return mosse;
     }

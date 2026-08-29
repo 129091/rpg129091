@@ -1,13 +1,13 @@
 package it.unicam.cs.mpgc.rpg129091.modello;
 
 /**
- * Classe base astratta per tutte le entità del gioco (siano essi Eroi o Nemici).
- * 
- * <p>Implementa le operazioni comuni di gestione dei punti vita in totale accordo con
- * il Single Responsibility Principle (SRP): il focus esclusivo di questa classe 
- * è incapsulare in modo sicuro e robusto lo stato di vita dell'entità.
- * La classe evita setter liberi a favore di metodi protetti per il ripristino
- * o di modifiche organiche (es. subire danno).</p>
+ * Classe base astratta per tutte le entità del gioco.
+ *
+ * <p>Rispetta il Single Responsibility Principle (SRP): incapsula
+ * esclusivamente lo stato di vita dell'entità (nome, punti vita).
+ * Implementa {@link Combattente} che compone {@link Identificabile}
+ * e {@link GestoreSalute}, fornendo l'implementazione base di tutte
+ * le operazioni di gestione della salute.</p>
  */
 public abstract class Entita implements Combattente {
 
@@ -16,12 +16,11 @@ public abstract class Entita implements Combattente {
     private final int puntiVitaMassimi;
 
     /**
-     * Inizializza una nuova entità, con i punti vita iniziali
-     * settati automaticamente al valore massimo consentito.
+     * Inizializza una nuova entità con i punti vita al massimo.
      *
-     * @param nome             il nome proprio dell'entità
+     * @param nome             il nome dell'entità
      * @param puntiVitaMassimi il livello massimo di vita
-     * @throws IllegalArgumentException se il nome è vuoto o la vita <= 0
+     * @throws IllegalArgumentException se il nome è vuoto o la vita &lt;= 0
      */
     protected Entita(String nome, int puntiVitaMassimi) {
         if (nome == null || nome.isBlank()) {
@@ -72,15 +71,7 @@ public abstract class Entita implements Combattente {
         return this.puntiVita <= 0;
     }
 
-    /**
-     * Ripristina i punti vita ad un valore specifico scavalcando
-     * le regole di danno/cura sequenziale.
-     * <p>Questo metodo va utilizzato *esclusivamente* per il caricamento 
-     * di salvataggi precedenti e deserializzazioni.</p>
-     *
-     * @param puntiVita i punti vita caricati dal database
-     * @throws IllegalArgumentException se i punti superano il massimale o scendono sotto lo 0
-     */
+    @Override
     public void ripristinaPuntiVita(int puntiVita) {
         if (puntiVita < 0 || puntiVita > this.puntiVitaMassimi) {
             throw new IllegalArgumentException(
